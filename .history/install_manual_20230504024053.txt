@@ -1,0 +1,9 @@
+MemoMind 1.0.2 uploaded to TestPyPi 
+View at:
+https://test.pypi.org/project/MemoMind/1.0.2/
+
+To install the package, use pip install -i https://test.pypi.org/simple/ MemoMind==1.0.2
+
+To use the script just use <memo> command. don't hestiate to use help command
+
+In order to remove the script from your system use  pip uninstall memomind

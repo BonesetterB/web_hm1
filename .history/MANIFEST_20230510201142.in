@@ -1,0 +1,3 @@
+include memomind/config.JSON
+include memomind/*.md
+include memomind/*.bin

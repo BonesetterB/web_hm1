@@ -1,0 +1,5 @@
+MemoMind 1.0.1 uploaded to TestPyPi 
+View at:
+https://test.pypi.org/project/MemoMind/1.0.1/
+
+To install the package, use py -m pip install --index-url https://test.pypi.org/simple/MemoMind/1.0.0/
