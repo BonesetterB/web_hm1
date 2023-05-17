@@ -4,6 +4,7 @@ from itertools import islice
 import re
 import os
 import json
+from abc import abstractmethod, ABC
 
 
 dir_path = os.path.dirname(__file__)
@@ -11,6 +12,40 @@ dir_path = os.path.dirname(__file__)
 with open(os.path.join(dir_path, "config.JSON")) as cfg:
     cfg_data = json.load(cfg)
     languages = True if cfg_data["Language"] == "eng" else False
+
+
+class SendingToUsers(ABC):
+    @abstractmethod
+    def sending(self):
+        pass
+
+class SendingContact(SendingToUsers):
+    def sending(self):
+        pass
+    
+class SendingAddress(SendingToUsers):
+    def sending(self):
+        pass
+
+class SendingEmail(SendingToUsers):
+    def sending(self):
+        pass
+
+class SendingBirthday(SendingToUsers):
+    def sending(self):
+        pass
+
+class SendingCongrat(SendingToUsers):
+    def sending(self):
+        pass
+
+class SendingNote(SendingToUsers):
+    def sending(self):
+        pass
+
+class SendingTag(SendingToUsers):
+    def sending(self):
+        pass
 
 
 class Field:

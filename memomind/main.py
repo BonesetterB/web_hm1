@@ -26,6 +26,7 @@ from memomind.notebook import (
 )
 import re
 import memomind.sort_folder
+from abc import abstractmethod, ABC
 
 
 dir_path = os.path.dirname(__file__)
