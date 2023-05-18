@@ -1,6 +1,6 @@
 """adding ,changing ,changing status, deleting, searching notes
 , adding tag, searching by tag"""
-from ab_classes import Note, NotePad, HashTag
+from ab_classes import Note, NotePad, HashTag, SendingTag,SendingNote
 import json
 import os
 
@@ -62,10 +62,8 @@ def add_tag(notebook: NotePad, note, tag):
     rec = quick_note_list(notebook, note)
     rec.add_tag(HashTag(tag))
     notebook.sorting()
-    if languages:
-        return f'Tag "{tag}" added to record "{rec}"'
-    else:
-        return f'Тег "{tag}" додано до запису "{rec}"'
+    inter=SendingTag(tag,rec)
+    return inter.sending(languages)
 
 
 @input_error
@@ -82,23 +80,17 @@ def change_note(notebook: NotePad, *args):
         new_note = new_note.replace(f'{search_word} ', "")
         if record:
             notebook.change_note(record, new_note)
-            if languages:
-                return f'Note changed to "{new_note}"'
-            else:
-                return f'Запис змінено на "{new_note}"'
+            inter=SendingNote()
+            return inter.sendChange(languages,new_note)
     text = f'{" ".join(args)}'
     old_note, new_note = text.split("... ")
     record = quick_note_list(notebook, old_note)
     if record in notebook.note_list:
         notebook.change_note(record, new_note)
-        if languages:
-            return f'Note changed to "{new_note}"'
-        else:
-            return f'Запис змінено на "{new_note}"'
-    if languages:
-        return f'Record "{record}" not found'
-    else:
-        return f'Запис "{record}" не знайдений'
+        inter=SendingNote()
+        return inter.sendChange(languages,new_note)
+    inter=SendingNote()
+    return inter.sendEror(languages,record)
 
 
 @input_error
@@ -138,22 +130,16 @@ def del_note(notebook: NotePad, *args):
         if record:
             notebook.delete(record)
             notebook.sorting()
-            if languages:
-                return f'"{record}" deleted successfully'
-            else:
-                return f'"{record}" видалений успішно'
+            inter=SendingNote()
+            return inter.sendDel(languages,record)
     record = quick_note_list(notebook, text)
     if record in notebook.note_list:
         notebook.delete(record)
         notebook.sorting()
-        if languages:
-            return f'"{record}" deleted successfully'
-        else:
-            return f'"{record}" видалений успішно'
-    if languages:
-        return f'Record "{record}" not found'
-    else:
-        return f'Запис "{record}" не знайдений'
+        inter=SendingNote()
+        return inter.sendDel(languages,record)
+    inter=SendingNote()
+    return inter.sendEror(languages,record)
 
 
 @input_error

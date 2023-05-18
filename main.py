@@ -14,6 +14,7 @@ from ab_classes import (
     SendingCongrat,
     SendingNote,
     SendingTag,
+    SendingPhone,
 )
 
 from functools import wraps
@@ -128,10 +129,8 @@ def add_address(book: AddressBook, contact: str, *address):
     address_new = Address(x)
     rec = book.get(contact)
     rec.add_address(address_new)
-    if languages:
-        return f'Added address: {x} for existing contact "{contact}"'
-    else:
-        return f'Для існуючого контакту "{contact}" додано адресу: {x}'
+    inter=SendingAddress(contact,x)
+    return inter.sending(languages)
 
 
 @input_error
@@ -139,22 +138,17 @@ def add_email(book: AddressBook, contact: str, email: str):
     email_new = Email(email)
     rec = book.get(contact)
     rec.add_email(email_new)
-    if languages:
-        return f'Added e-mail for existing contact "{contact}": {email}'
-    else:
-        return f'Для існуючого контакту "{contact}" додано e-mail: {email}'
-
+    interface=SendingEmail(contact,email)
+    return interface.sending(languages)
+    
 
 @input_error
 def add_birthday(book: AddressBook, contact: str, birthday: str):
     b_day = Birthday(birthday)
     rec = book.get(contact)
     rec.add_birthday(b_day)
-    if languages:
-        return f'Birthday added for existing contact "{contact}": {b_day}'
-    else:
-        return f'Для існуючого контакту "{contact}" додано день народження: {b_day}'
-
+    inter=SendingBirthday(contact,b_day)
+    return inter.sending(languages)
 
 @input_error
 def congrat(book: AddressBook, days: int):
@@ -167,22 +161,8 @@ def congrat(book: AddressBook, days: int):
     for contact in book.values():
         if contact.days_to_birthday() <= int(days):
             output += str(contact)
-    if languages:
-        text = (
-            f"the following contacts haave birthdays:\n{output}"
-            if output
-            else "none of the contacts has a birthday"
-        )
-    else:
-        text = (
-            f"день народження в наступних контактів:\n{output}"
-            if output
-            else "ні в кого з контактів не має дня народження"
-        )
-    if languages:
-        return f"During the next {days} days {text}"
-    else:
-        return f"В період наступних {days} днів {text}"
+    inter=SendingCongrat(days,output)
+    return inter.sending(languages)
 
 
 @input_error
@@ -208,11 +188,8 @@ def change(
         else:
             phone_new = Phone(phone)
         rec.add_phone(phone_new)
-        if languages:
-            return f'Changed phone number to {phone_new} for contact "{contact}"'
-        else:
-            return f'Змінено номер телефону на {phone_new} для контакту "{contact}"'
-
+        inter=SendingPhone(contact,phone_new)
+        return inter.sendingChange(languages)
     else:
         if len(rec.phones) == 1:
             num = 1
@@ -232,11 +209,8 @@ def change(
             phone_new = Phone(phone)
         old_phone = rec.phones[num - 1]
         rec.edit_phone(phone_new, num)
-        if languages:
-            return f'Changed phone number {old_phone} to {phone_new} for contact "{contact}"'
-        else:
-            return f'Змінено номер телефону {old_phone} на {phone_new} для контакту "{contact}"'
-
+        inter=SendingPhone(contact,phone_new)
+        return inter.sendingChange(languages)
 
 @input_error
 def change_email(
@@ -261,10 +235,8 @@ def change_email(
         email_new = email
 
     rec.change_email(email_new)
-    if languages:
-        return f'Changed e-mail of contact "{contact}" to {email_new}'
-    else:
-        return f'Змінено e-mail контакту "{contact}" на {email_new}'
+    inter=SendingEmail(contact,email_new)
+    return inter.sendChange(languages)
 
 
 @input_error
@@ -272,18 +244,15 @@ def change_birthday(book: AddressBook, contact: str, birthday: str):
     rec = book.get(contact)
     new_birthday = Birthday(birthday)
     rec.change_birthday(new_birthday)
-    if languages:
-        return f'Changed birthday to {new_birthday} for contact "{contact}"'
-    else:
-        return f'Змінено дату народження на {new_birthday} для контакту "{contact}"'
-
+    inter=SendingBirthday(contact,new_birthday)
+    return inter.sendChange(languages)
 
 @input_error
 def change_address(book: AddressBook, contact: str, *address):
     x = " ".join(address)
     address_new = Address(x)
     rec = book.get(contact)
-
+    inter=SendingAddress(contact,address_new)
     if not rec.address:
         if not x:
             if languages:
@@ -297,10 +266,7 @@ def change_address(book: AddressBook, contact: str, *address):
         else:
             address_new = Address(x)
         rec.add_address(address_new)
-        if languages:
-            return f'Added {address_new} for contact "{contact}"'
-        else:
-            return f'Додано адресу {address_new} для контакту "{contact}"'
+        return inter.sending(languages)
     else:
         if not x:
             if languages:
@@ -311,20 +277,15 @@ def change_address(book: AddressBook, contact: str, *address):
             address_new = Address(x)
         old_address = rec.address
         rec.change_address(address_new)
-        if languages:
-            return f'Changed address {old_address} to {address_new} for contact "{contact}"'
-        else:
-            return f'Змінено адресу {old_address} на {address_new} для контакту "{contact}"'
+        return inter.sendChange(languages,old_address)
 
 
 @input_error
 def del_phone(book: AddressBook, contact: str, phone=None):
     rec = book.get(contact)
     rec.del_phone()
-    if languages:
-        return f"Contact {contact}, phone number deleted"
-    else:
-        return f"Контакт {contact}, телефон видалено"
+    inter=SendingPhone(contact)
+    return inter.sendDel(languages)
 
 
 @input_error
@@ -332,10 +293,8 @@ def del_email(book: AddressBook, *args):
     contact = " ".join(args)
     rec = book.get(contact)
     rec.email = None
-    if languages:
-        return f"Contact {contact}, e-mail deleted"
-    else:
-        return f"Контакт {contact}, e-mail видалено"
+    interface=SendingEmail(contact)
+    return interface.sending(languages)
 
 
 @input_error
@@ -345,6 +304,7 @@ def del_contact(book: AddressBook, *args):
     if not rec:
         raise AttributeError
     ans = None
+    interface=SendingContact(book.remove_record(contact))
     while ans != "y":
         if languages:
             ans = input(f"Are you sure you want to delete {contact}? (Y/N)").lower()
@@ -352,10 +312,7 @@ def del_contact(book: AddressBook, *args):
             ans = input(
                 f"Ви впевнені що хочете видалити контакт {contact}? (Y/N)"
             ).lower()
-    if languages:
-        return f"Contact {book.remove_record(contact)} Removed!"
-    else:
-        return f"Контакт {book.remove_record(contact)} Видалено!"
+    return interface.sendDel(languages)
 
 
 @input_error
@@ -363,10 +320,8 @@ def del_birthday(book: AddressBook, *args):
     contact = " ".join(args)
     rec = book.get(contact)
     rec.birthday = None
-    if languages:
-        return f"Contact {contact}, birthday deleted"
-    else:
-        return f"Контакт {contact}, день народження видалений"
+    inter=SendingBirthday(contact)
+    return inter.sendChange(languages)
 
 
 @input_error
@@ -374,10 +329,8 @@ def del_address(book: AddressBook, *args):
     contact = " ".join(args)
     rec = book.get(contact)
     rec.address = None
-    if languages:
-        return f"Contact {contact}, address deleted"
-    else:
-        return f"Контакт {contact}, адреса видалена"
+    interface=SendingAddress(contact)
+    return interface.sendDel(languages)
 
 
 def load_data(book1: AddressBook, notebook: NotePad):

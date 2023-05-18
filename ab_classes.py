@@ -24,7 +24,7 @@ class SendingToUsers(ABC):
 
 class SendingContact(SendingToUsers):
     
-    def __init__(self,contact,phone,email,address) -> None:
+    def __init__(self,contact,phone=None,email=None,address=None) -> None:
         self.contact=contact
         self.phone=phone
         self.email=email
@@ -46,28 +46,130 @@ class SendingContact(SendingToUsers):
         return f"Контакт {self.contact} Видалено!"
     
 class SendingAddress(SendingToUsers):
-    def sending(self):
-        pass
-
+    def __init__(self, contact,address=None) -> None:
+        self.contact=contact
+        self.address=address
+    
+    def sending(self, language):
+        if language:
+           return f'Added address: {self.address} for existing contact "{self.contact}"'
+        return f'Для існуючого контакту "{self.contact}" додано адресу: {self.address}'
+    
+    def sendChange(self,language,old_address):
+        if language:
+             return f'Changed address {old_address} to {self.address} for contact "{self.contact}"'
+        return f'Змінено адресу {old_address} на {self.address} для контакту "{self.contact}"'
+    
+    def sendDel(self,language):
+        if language:
+            return f"Contact {self.contact}, address deleted"
+        return f"Контакт {self.contact}, адреса видалена"
+    
 class SendingEmail(SendingToUsers):
-    def sending(self):
-        pass
+    def __init__(self, contact,email=None) -> None:
+        self.contact=contact
+        self.email=email
+    
+    def sending(self, language):
+        if language:
+            return f'Added e-mail for existing contact "{self.contact}": {self.email}'
+        return f'Для існуючого контакту "{self.contact}" додано e-mail: {self.email}'
+    
+    def sendChange(self,language):
+        if language:
+            return f'Changed e-mail of contact "{self.contact}" to {self.email}'
+        return f'Змінено e-mail контакту "{self.contact}" на {self.email}'
+    
+    def sendDel(self,language):
+        if language:
+            return f"Contact {self.contact}, e-mail deleted"
+        return f"Контакт {self.contact}, e-mail видалено"
 
 class SendingBirthday(SendingToUsers):
-    def sending(self):
-        pass
+    def __init__(self, contact,Birthday=None) -> None:
+        self.contact=contact
+        self.Birthday=Birthday
+
+    def sending(self, language):
+        if language:
+            return f'Birthday added for existing contact "{self.contact}": {self.Birthday}'
+        return f'Для існуючого контакту "{self.contact}" додано день народження: {self.Birthday}'
+    
+    def sendChange(self,lang):
+        if lang:
+             return f'Changed birthday to {self.Birthday} for contact "{self.contact}"'
+        return f'Змінено дату народження на {self.Birthday} для контакту "{self.contact}"'
+    
+    def sendDel(self,lan):
+        if lan:
+            return f"Contact {self.contact}, birthday deleted"
+        return f"Контакт {self.contact}, день народження видалений"
+
+class SendingPhone(SendingToUsers):
+    def __init__(self, contact,Phone=None) -> None:
+        self.contact=contact
+        self.Phone=Phone
+    def sendingChange(self, language):
+        if language:
+            return f'Changed phone number to {self.Phone} for contact "{self.contact}"'
+        return f'Змінено номер телефону на {self.Phone} для контакту "{self.contact}"'
+    def sendDel(self,lan):
+        if lan:
+            return f"Contact {self.contact}, phone number deleted"
+        return f"Контакт {self.contact}, телефон видалено"
 
 class SendingCongrat(SendingToUsers):
-    def sending(self):
-        pass
+    def __init__(self, days,output=None) -> None:
+        self.days=days
+        self.output=output
+    def sending(self, language):
+        if language:
+            text = (
+            f"the following contacts haave birthdays:\n{self.output}"
+            if self.output
+            else "none of the contacts has a birthday"
+            )
+        else:
+            text = (
+                f"день народження в наступних контактів:\n{self.output}"
+                if self.output
+                else "ні в кого з контактів не має дня народження"
+            )
+        if language:
+            return f"During the next {self.days} days {text}"
+        else:
+            return f"В період наступних {self.days} днів {text}"
 
 class SendingNote(SendingToUsers):
-    def sending(self):
-        pass
+    def sending(self, language):
+        if language:
+            return "Note added"
+        return "Нотатка добавлена"
+    
+    def sendChange(self,lang,new_note):
+        if lang:
+                return f'Note changed to "{new_note}"'
+        return f'Запис змінено на "{new_note}"'
+    
+    def sendEror(self,lan,record):
+        if lan:
+            return f'Record "{record}" not found'
+        return f'Запис "{record}" не знайдений'
+    
+    def sendDel(self,lan,record):
+        if languages:
+            return f'"{record}" deleted successfully'
+        return f'"{record}" видалений успішно'
+
 
 class SendingTag(SendingToUsers):
-    def sending(self):
-        pass
+    def __init__(self, tag,rec) -> None:
+        self.tag=tag
+        self.rec=rec
+    def sending(self, language):
+        if language:
+            return f'Tag "{self.tag}" added to record "{self.rec}"'
+        return f'Тег "{self.tag}" додано до запису "{self.rec}"'
 
 
 class Field:
